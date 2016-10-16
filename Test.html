@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test</title>
+        <meta charset="UTF-8">
+        <meta name="author" content="Christopher Williams">
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style type="text/css">
+        BODY {
+            padding-top: 70px;
+        }
+        .failed {
+            color : red;
+        }
+        .passed {
+            color : green;
+        }
+        .informational {
+            color : blue;
+        }
+        .hdr {
+            display : inline-block;
+            border-bottom-style: solid;
+            border-bottom-width: 1px;
+            padding-bottom: 2px;
+            margin-bottom: 0.5em;
+        }
+        .msie-7 .hdr {
+            border-bottom-width: 0!important;
+            font-weight: bold;
+            margin-top: 1em;
+        }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="index.html" class="navbar-brand">padstring.js</a>
+            </div>
+        </nav>
+        <div class="container">
+            <pre id="testOutput"></pre>
+        </div>
+        <script type="text/javascript" src="padstring.js"></script>
+        <script type="text/javascript">
+window.onload = function() {
+    "use strict";
+    var msg = "", 
+        p = document.getElementById("testOutput"),
+        eol = "<br>",
+        testVal, passed, passMark, 
+        pM_y = '<span class="passed">(Y)</span> ',
+        pM_n = '<span class="failed">(N)</span> ',
+        pM_i = '<span class="informational">(I)</span> ',
+        testBase, expected, thrown, testInput, fmtStr, p1, p2, p3, before, after,
+        formatHdr = function(text) {
+            msg += '<div class="hdr">' + text + '</div>' + eol;
+        },
+        doTest = function(testDesc, testVal, testCond) {
+            passMark = testCond ? pM_y : pM_n;
+            msg += passMark + testDesc + eol;
+            if (!testCond) {
+                msg += "\tCheck: ";
+                if (typeof(testVal) === "string") {
+                    msg += "'" + testVal + "'";
+                }
+                else {
+                    msg += String(testVal);
+                }
+                msg += eol;
+            }
+        };
+
+    try {        
+        formatHdr('Bad inputs');
+        
+        testBase = "String.prototype";
+        testVal = undefined;
+        thrown = false;
+        try {
+            String.prototype.padStart.call(testVal, 1, 0);
+        }
+        catch(e) {
+            thrown = true;
+        }
+        doTest(testBase + '.padStart.call(' + testVal + ', 1, 0) throws', thrown, thrown === true);
+        
+        testVal = null;
+        thrown = false;
+        try {
+            String.prototype.padStart.call(testVal, 1, 0);
+        }
+        catch(e) {
+            thrown = true;
+        }
+        doTest(testBase + '.padStart.call(' + testVal + ', 1, 0) throws', thrown, thrown === true);
+        
+        msg += eol;
+        
+        formatHdr('Non-string inputs');
+        
+        testInput = 0;
+        p1 = 2;
+        p2 = "0";
+        expected = "00";
+        testVal = String.prototype.padStart.call(testInput, p1, p2);
+        doTest(testBase + '.padStart.call(' + testInput + ', ' + p1 + ', "' + p2 + '") === "' + expected + '"', 
+            testVal, testVal === expected);
+            
+        testInput = [0];
+        testVal = String.prototype.padStart.call(testInput, p1, p2);
+        doTest(testBase + '.padStart.call(' + JSON.stringify(testInput) + ', ' + p1 + ', "' + p2 + '") === "' + expected + '"', 
+            testVal, testVal === expected);
+        
+        msg += eol;
+        
+        formatHdr('padTo parameter');
+        
+        testInput = "xxxx";
+        p1 = Number.NaN;
+        p2 = " ";
+        expected = testInput;
+        testVal = testInput.padStart(p1, p2);
+        doTest('"' + testInput + '".padStart(Number.' + p1 + ', "' + p2 + '") === "' + expected + '"', 
+            testVal, testVal === expected);
+            
+        p1 = -1;
+        testVal = testInput.padStart(p1, p2);
+        doTest('"' + testInput + '".padStart(' + p1 + ', "' + p2 + '") === "' + expected + '"', 
+            testVal, testVal === expected);
+            
+        p1 = 0;
+        testVal = testInput.padStart(p1, p2);
+        doTest('"' + testInput + '".padStart(' + p1 + ', "' + p2 + '") === "' + expected + '"', 
+            testVal, testVal === expected);
+            
+        p1 = 4;
+        testVal = testInput.padStart(p1, p2);
+        doTest('"' + testInput + '".padStart(' + p1 + ', "' + p2 + '") === "' + expected + '"', 
+            testVal, testVal === expected);
+            
+        p1 = 19;
+        p2 = "Y";
+        testVal = testInput.padEnd(p1, p2);
+        expected = "xxxxYYYYYYYYYYYYYYY";
+        doTest('"' + testInput + '".padEnd(' + p1 + ', "' + p2 + '") === "' + expected + '"', 
+            testVal, testVal === expected);
+        
+        msg += eol;
+        
+        formatHdr('padWith parameter');
+        
+        testInput = "x";
+        p1 = 2;
+        expected = " x";
+        
+        testVal = testInput.padStart(p1);
+        doTest('"' + testInput + '".padStart(' + p1 + ') === "' + expected + '"', 
+            testVal, testVal === expected);
+        
+        p2 = null;
+        expected = "nx";
+        testVal = testInput.padStart(p1, p2);
+        doTest('"' + testInput + '".padStart(' + p1 + ', ' + p2 + ') === "' + expected + '"', 
+            testVal, testVal === expected);
+            
+        p2 = "";
+        expected = "x";
+        testVal = testInput.padStart(p1, p2);
+        doTest('"' + testInput + '".padStart(' + p1 + ', "' + p2 + '") === "' + expected + '"', 
+            testVal, testVal === expected);
+            
+        p2 = 0;
+        expected = "0x";
+        testVal = testInput.padStart(p1, p2);
+        doTest('"' + testInput + '".padStart(' + p1 + ', ' + p2 + ') === "' + expected + '"', 
+            testVal, testVal === expected);
+            
+        testInput = "0";
+        p1 = "3";
+        p2 = "123456789";
+        expected = "012";
+        testVal = testInput.padEnd(p1, p2);
+        doTest('"' + testInput + '".padEnd("' + p1 + '", "' + p2 + '") === "' + expected + '"', 
+            testVal, testVal === expected);
+            
+        p1 = 40;
+        expected = "1234567891234567891234567891234567891230";
+        testVal = testInput.padStart(p1, p2);
+        doTest('"' + testInput + '".padStart(' + p1 + ', "' + p2 + '") === "' + expected + '"', 
+            testVal, testVal === expected);
+
+    }
+    catch(e) { msg += e.message + eol; }
+    p.innerHTML = msg;
+};
+        </script>
