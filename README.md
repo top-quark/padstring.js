@@ -24,3 +24,10 @@ You can also call the methods generically as `String.prototype.padStart.call(x)`
 does not have to be a String object. Can't quite see the use case for this myself, but 
 other String methods are generic so these are as well. If you pass in null or undefined,
 a `TypeError` is raised. This also follows specification.
+
+## Licence
+
+Copyright (C) 2016 Christopher Williams.
+
+This is distributed under the terms of the [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0) License,
+in the hope that you may find it useful.
